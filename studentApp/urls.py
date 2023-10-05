@@ -23,11 +23,13 @@ urlpatterns = [
 
     # Course api url
     path('api/students',views.StudentsViews.as_view(), name="students-details"),
-    path('api/students/<int:pk>',views.StudentsViews.as_view(), name="students-updated"),
+    path('api/students/update/<int:pk>',views.StudentsViews.as_view(), name="students-updated"),
+    path('api/students/<int:pk>',views.singleStudentView.as_view(), name="student-list"),
     path('api/students/delete/<int:pk>',views.StudentsViews.as_view(), name="students-Deleted"),
 
     # Course api url
     path('api/courses',views.CourseViews.as_view(), name="courses-details"),
-    path('api/courses/<int:pk>',views.CourseViews.as_view(), name="courses-updated"),
+    path('api/courses/update/<int:pk>',views.CourseViews.as_view(), name="courses-updated"),
+    path('api/courses/<int:pk>',views.singleCourseView.as_view(), name="courses-list"),
     path('api/courses/delete/<int:pk>',views.CourseViews.as_view(), name="courses-Deleted"),
 ]

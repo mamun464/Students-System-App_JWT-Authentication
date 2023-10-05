@@ -15,14 +15,40 @@ class StudentsViews(APIView):
     def post(self,request):
         pass
 
+#single course view
+class singleCourseView(APIView):
 
+    def get(self, request, pk):
+        try:
+             course=Courses.objects.get(pk=pk)
+        except Courses.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CourseSerializer(course)
+        
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+
+#single Student view
+class singleStudentView(APIView):
+
+    def get(self, request, pk):
+        try:
+             student_single=Students.objects.get(pk=pk)
+        except Students.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StudentSerializer(student_single)
+        
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 class CourseViews(APIView):
-    #Get Course Info
+    #Get all Course Info
     def get(self,request):
         course=Courses.objects.all()
         serializer = CourseSerializer(course, many=True)
         return Response(serializer.data)
+    
     
     #create Course
     def post(self,request):
