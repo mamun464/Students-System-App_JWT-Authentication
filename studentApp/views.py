@@ -60,3 +60,54 @@ class CourseViews(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
+#for student Information View
+class StudentsViews(APIView):
+    #Get All students Info
+    def get(self,request):
+        students=Students.objects.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+    
+
+
+     #create Student
+    def post(self,request):
+        serializer = StudentSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+     #Updating Student
+    def put(self,request,pk):
+
+        try:
+            student_update=Students.objects.get(pk=pk)
+        except Students.DoesNotExist:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer=StudentSerializer(student_update,data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+    #for deleted Student
+    def delete(self, request, pk):
+        try:
+             delete_student=Students.objects.get(pk=pk)
+        except Students.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        delete_student.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
+
