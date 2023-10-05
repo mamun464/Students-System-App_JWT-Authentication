@@ -5,20 +5,33 @@ from rest_framework import serializers
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Courses
-        fields = '__all__'
+        exclude = ['enrolled_student']
 
     def validate_course_code(self, value):
         # Your custom validation logic here
         if all(char.isalnum() or char.isspace() for char in value):
             return value
         raise serializers.ValidationError("Course code can only contain numbers, alphabets, and white spaces.")
-    
+
+class CourseSerializerEnrolled(serializers.ModelSerializer):
+    class Meta:
+        model = Courses  # Replace 'Course' with the actual model name for your courses
+        fields = ['course_code', 'course_name']
 
 class StudentSerializer(serializers.ModelSerializer):
-    student=serializers.StringRelatedField(many=True, read_only=True)
+    # enrolled=serializers.StringRelatedField(many=True, read_only=True)
+
+    enrolled = serializers.SerializerMethodField()
+
+    def get_enrolled(self, obj):
+        #  enrolled is a related field to Course
+        enrolled_courses = obj.enrolled.all()
+        serialized_courses = CourseSerializerEnrolled(enrolled_courses, many=True).data
+        return serialized_courses
+
     class Meta:
         model = Students
-        fields = ['id', "first_name", "last_name", "s_id", "user_name", 'department','email', 'date_of_birth', 'gender','student']
+        fields = ['id', "first_name", "last_name", "s_id", "user_name", 'department','email', 'date_of_birth', 'gender','enrolled']
 
     def validate_s_id(self, value):
         # Custom validation logic for Student_id
