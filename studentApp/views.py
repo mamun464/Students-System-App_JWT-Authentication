@@ -4,19 +4,30 @@ from .models import Students,Courses
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
-class StudentsViews(APIView):
-    def get(self,request):
-        students=Students.objects.all()
-        serializer = StudentSerializer(students, many=True)
-        return Response(serializer.data)
+# class StudentsViews(APIView):
+
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
     
-    def post(self,request):
-        pass
+#     def get(self,request):
+        
+#         students=Students.objects.all()
+#         serializer = StudentSerializer(students, many=True)
+#         return Response(serializer.data)
+        
+    
+#     def post(self,request):
+#         pass
 
 #single course view
 class singleCourseView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -31,6 +42,9 @@ class singleCourseView(APIView):
 
 #single Student view
 class singleStudentView(APIView):
+    # IsAuthenticated applied
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -43,8 +57,14 @@ class singleStudentView(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 class CourseViews(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = []
     #Get all Course Info
     def get(self,request):
+        # IsAuthenticated applited
+        self.permission_classes = [IsAuthenticated]
+        self.check_permissions(request)
+
         course=Courses.objects.all()
         serializer = CourseSerializer(course, many=True)
         return Response(serializer.data)
@@ -52,6 +72,10 @@ class CourseViews(APIView):
     
     #create Course
     def post(self,request):
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+
         serializer = CourseSerializer(data=request.data)
         
         if serializer.is_valid():
@@ -63,12 +87,16 @@ class CourseViews(APIView):
     #Updating Course
     def put(self,request,pk):
 
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+
         try:
             course=Courses.objects.get(pk=pk)
         except Courses.DoesNotExist:
              return Response(status=status.HTTP_404_NOT_FOUND)
         
-        serializer=CourseSerializer(course,data=request.data)
+        serializer=CourseSerializer(course,data=request.data,  partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -77,6 +105,10 @@ class CourseViews(APIView):
     
     #for deleted course
     def delete(self, request, pk):
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+
         try:
              course=Courses.objects.get(pk=pk)
         except Courses.DoesNotExist:
@@ -88,16 +120,31 @@ class CourseViews(APIView):
 
 #for student Information View
 class StudentsViews(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = []
     #Get All students Info
     def get(self,request):
+        # IsAuthenticated applied
+        self.permission_classes = [IsAuthenticated]
+        self.check_permissions(request)
+
         students=Students.objects.all()
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
+        
+    
     
 
 
+    
+    
      #create Student
     def post(self,request):
+        
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+        
         serializer = StudentSerializer(data=request.data)
         
         if serializer.is_valid():
@@ -111,12 +158,16 @@ class StudentsViews(APIView):
      #Updating Student
     def put(self,request,pk):
 
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+
         try:
             student_update=Students.objects.get(pk=pk)
         except Students.DoesNotExist:
              return Response(status=status.HTTP_404_NOT_FOUND)
         
-        serializer=StudentSerializer(student_update,data=request.data)
+        serializer=StudentSerializer(student_update,data=request.data,  partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -127,6 +178,10 @@ class StudentsViews(APIView):
 
     #for deleted Student
     def delete(self, request, pk):
+        # IsAdminUser applited
+        self.permission_classes = [IsAdminUser]
+        self.check_permissions(request)
+
         try:
              delete_student=Students.objects.get(pk=pk)
         except Students.DoesNotExist:

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from studentApp import views
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,8 +29,15 @@ urlpatterns = [
     path('api/students/delete/<int:pk>',views.StudentsViews.as_view(), name="students-Deleted"),
 
     # Course api url
-    path('api/courses',views.CourseViews.as_view(), name="courses-details"),
+    path('api/courses/',views.CourseViews.as_view(), name="courses-details"),
     path('api/courses/update/<int:pk>',views.CourseViews.as_view(), name="courses-updated"),
     path('api/courses/<int:pk>',views.singleCourseView.as_view(), name="courses-list"),
     path('api/courses/delete/<int:pk>',views.CourseViews.as_view(), name="courses-Deleted"),
+
+    #JWT access token
+    path('api/gettoken',TokenObtainPairView.as_view(), name="token-obtain-pair"),
+    path('api/refreshtoken',TokenRefreshView.as_view(), name="token-Refresh"),
+    path('api/verifytoken',TokenVerifyView.as_view(), name="token-verify"),
 ]
+
+
